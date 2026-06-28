@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.playmatch.playmatch.dto.CreateUserRequest;
+import com.playmatch.playmatch.dto.UserResponse;
 import com.playmatch.playmatch.entity.User;
 import com.playmatch.playmatch.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
@@ -22,8 +25,8 @@ public class UserController {
     private final UserService userService;
      
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public UserResponse createUser(@Valid @RequestBody  CreateUserRequest request) {
+        return userService.createUser(request);
     }
 
     @GetMapping
