@@ -1,6 +1,8 @@
 package com.playmatch.playmatch.entity;
-
-import jakarta.persistence.Column;
+import java.time.LocalDateTime;
+import com.playmatch.playmatch.enums.SportType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,23 +15,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")
+@Table(name = "matches")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class Match {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String name;
+    private String title;
 
-    @Column(unique = true)
-    private String email;
+    @Enumerated(EnumType.STRING)
+    private SportType sport;
 
-    @Builder.Default
-    private Integer rating = 1200;
+    private LocalDateTime matchTime;
 
+    private int maxPlayers;
 }
