@@ -7,6 +7,7 @@ import com.playmatch.playmatch.dto.match.MatchResponse;
 import com.playmatch.playmatch.entity.Match;
 import com.playmatch.playmatch.exception.MatchNotFoundException;
 import com.playmatch.playmatch.repository.MatchRepository;
+import com.playmatch.playmatch.util.MatchResponseMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +21,7 @@ public class MatchService {
     public MatchResponse findMatchById(String id) {
         log.info("Fetching match with ID: {}", id);
         return matchRepository.findById(id)
-                .map(match -> new MatchResponse(
-                        match.getId(),
-                        match.getTitle(),
-                        match.getSport(),
-                        match.getMatchTime().toString(),
-                        match.getMaxPlayers()
-                ))
+                .map(match -> new MatchResponseMapper().toMatchResponse(match))
                 .orElseThrow(() -> new MatchNotFoundException(id));
     }
 
@@ -46,25 +41,14 @@ public class MatchService {
         Match savedMatch = matchRepository.save(matchEntity);
 
         log.info("Match created with ID: {}", savedMatch.getId());
-        return new MatchResponse(
-                savedMatch.getId(),
-                savedMatch.getTitle(),
-                savedMatch.getSport(),
-                savedMatch.getMatchTime().toString(),
-                savedMatch.getMaxPlayers()
-        );
+        return new MatchResponseMapper().toMatchResponse(savedMatch);
     }
 
     public List<MatchResponse> getAllMatches() {
         log.info("Fetching all matches");
         List<MatchResponse>allMatches= matchRepository.findAll().stream()
-                .map(match -> new MatchResponse(
-                        match.getId(),
-                        match.getTitle(),
-                        match.getSport(),
-                        match.getMatchTime().toString(),
-                        match.getMaxPlayers()
-                )).toList();
+                .map(match -> new MatchResponseMapper().toMatchResponse(match))
+                .toList();
         if (allMatches.isEmpty()) {
             log.warn("No matches found in the database");
             throw new MatchNotFoundException("No matches found");
@@ -82,16 +66,11 @@ public class MatchService {
         match.setSport(request.sport());
         match.setMatchTime(request.matchTime());
         match.setMaxPlayers(request.maxPlayers());
+        // match.setUpdatedAt(java.time.LocalDateTime.now());
 
         Match updatedMatch = matchRepository.save(match);
         log.info("Match updated with ID: {}", updatedMatch.getId());
-        return new MatchResponse(
-                updatedMatch.getId(),
-                updatedMatch.getTitle(),
-                updatedMatch.getSport(),
-                updatedMatch.getMatchTime().toString(),
-                updatedMatch.getMaxPlayers()
-        );
+        return new MatchResponseMapper().toMatchResponse(updatedMatch);
     }
 
     public void deleteMatch(String id) {

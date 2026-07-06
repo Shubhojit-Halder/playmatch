@@ -1,11 +1,12 @@
 package com.playmatch.playmatch.dto.match;
-
+import com.playmatch.playmatch.enums.SportType;
 public record MatchResponse(
     String id,
     String title,
-    String sport,
+    SportType sport,
     String matchTime,
-    int maxPlayers
+    Integer maxPlayers,
+    Integer currentPlayers
 ) {
 
 }
