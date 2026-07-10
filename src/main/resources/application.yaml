@@ -1,17 +1,23 @@
 spring:
   application:
     name: playmatch
-  # autoconfigure:
-  #   exclude:
-  #     - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
   datasource:
     url: jdbc:postgresql://localhost:5434/playmatch
     username: postgres
     password: password
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
 
+logging:
+  level:
+    org.springframework.security: TRACE
+
+jwt:
+  secret: 5d8d3d4a5f6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2
+  expiration: 3600000
 server:
   port: 8080
