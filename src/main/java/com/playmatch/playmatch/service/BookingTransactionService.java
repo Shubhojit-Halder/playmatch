@@ -1,7 +1,12 @@
 package com.playmatch.playmatch.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
 import com.playmatch.playmatch.dto.booking.BookingResponse;
 import com.playmatch.playmatch.entity.Booking;
 import com.playmatch.playmatch.exception.DuplicateBookingException;
@@ -16,6 +21,8 @@ import com.playmatch.playmatch.enums.BookingStatus;
 import com.playmatch.playmatch.repository.BookingRepository;
 import com.playmatch.playmatch.repository.MatchRepository;
 import com.playmatch.playmatch.repository.UserRepository;
+import com.playmatch.playmatch.security.CustomUserDetails;
+
 import jakarta.transaction.Transactional;
 
 
@@ -30,12 +37,17 @@ public class BookingTransactionService {
 
     @Transactional
     public BookingResponse createBooking(BookingRequest request) {
-        User user=userRepository.findById(request.userId()).orElseThrow(() -> new UserNotFoundException(request.userId())); // Implement this method to get the current user
+        Authentication auth= SecurityContextHolder.getContext().getAuthentication();
+
+        CustomUserDetails userDetails = (CustomUserDetails)auth.getPrincipal();
+        
+        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(()->new UserNotFoundException(userDetails.getUsername()));
+        
         Match match = matchRepository.findById(request.matchId()).orElseThrow(() -> new MatchNotFoundException(request.matchId())); // Implement this method to get the match
 
         // Check if the user has already booked this match
-        if (bookingRepository.existsByUser_IdAndMatch_Id(request.userId(), request.matchId())) {
-            log.error("User {} has already booked match {}", request.userId(), request.matchId());
+        if (bookingRepository.existsByUser_IdAndMatch_Id(user.getId(), request.matchId())) {
+            log.error("User {} has already booked match {}", user.getId(), request.matchId());
             throw new DuplicateBookingException("User has already booked this match");
         }
 
@@ -47,7 +59,7 @@ public class BookingTransactionService {
         log.info("Updating current players for match {}. Current players: {}, Max players: {}", match.getTitle(), match.getBookedPlayers(), match.getMaxPlayers());
         match.setBookedPlayers(match.getBookedPlayers() + 1);
         log.info("Match {} updated successfully. New current players: {}", match.getTitle(), match.getBookedPlayers());
-        log.info("Creating booking for user {} and match {}", request.userId(), request.matchId());
+        log.info("Creating booking for user {} and match {}", user.getId(), request.matchId());
         Booking matchBooking = new Booking();
         matchBooking.setUser(user);
         matchBooking.setMatch(match);

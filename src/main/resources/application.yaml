@@ -17,7 +17,7 @@ logging:
     org.springframework.security: TRACE
 
 jwt:
-  secret: 5d8d3d4a5f6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2
+  secret: YWJpbGl0eXNvbGlkbWVldHdoaWNoaHVtYW5zZW50ZnVsbHl3aG9wcg==
   expiration: 3600000
 server:
   port: 8080
