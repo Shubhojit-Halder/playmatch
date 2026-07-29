@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.playmatch.playmatch.dto.auth.LoginRequest;
 import com.playmatch.playmatch.dto.auth.LoginResponse;
+import com.playmatch.playmatch.dto.auth.RefreshTokenRequest;
 
 
 @Controller
@@ -35,5 +36,11 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(authService.refreshToken(request));
+    }
+    
     
 }

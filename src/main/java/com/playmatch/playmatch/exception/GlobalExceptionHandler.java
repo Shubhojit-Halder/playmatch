@@ -171,4 +171,31 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleRefreshTokenExpiredException(RefreshTokenExpiredException ex){
+        Map<String, String> errors = new HashMap<>();
+                errors.put("Expired: ",ex.getMessage());
+                ErrorResponse error = new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        LocalDateTime.now(),
+                        errors
+                );
+        
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+    @ExceptionHandler(RefreshTokenNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRefreshTokenNotFoundException(RefreshTokenNotFoundException ex){
+        Map<String, String> errors = new HashMap<>();
+                errors.put("Invalid access: ", ex.getMessage());
+                ErrorResponse error = new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        LocalDateTime.now(),
+                        errors
+                );
+        
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }

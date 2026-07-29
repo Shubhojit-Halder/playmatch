@@ -1,13 +1,16 @@
 package com.playmatch.playmatch.security;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.playmatch.playmatch.enums.Role;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,18 +38,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String jwt = authHeader.substring(7);
         String username = jwtService.extractUsername(jwt);
+        Role role = jwtService.extractRole(jwt);
         log.info("jwt {}, userName {}",jwt,username);
         if (username != null
-                && SecurityContextHolder.getContext().getAuthentication() == null) {
+                && SecurityContextHolder.getContext().getAuthentication() == null && jwtService.isTokenValid(jwt)) {
             // if already not authenticated then authenticate
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(
-                        userDetails,
+                        username,
                         null,
-                        userDetails.getAuthorities()
+                        List.of(new SimpleGrantedAuthority("ROLE_"+role.name()))
                 );
                 authToken.setDetails(
                     new WebAuthenticationDetailsSource()
@@ -54,7 +55,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext()
                     .setAuthentication(authToken);
-            }
         }
         filterChain.doFilter(request,response);
     }

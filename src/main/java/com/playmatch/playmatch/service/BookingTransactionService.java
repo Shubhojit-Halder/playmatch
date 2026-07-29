@@ -1,29 +1,27 @@
 package com.playmatch.playmatch.service;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.playmatch.playmatch.dto.booking.BookingRequest;
 import com.playmatch.playmatch.dto.booking.BookingResponse;
 import com.playmatch.playmatch.entity.Booking;
+import com.playmatch.playmatch.entity.Match;
+import com.playmatch.playmatch.entity.User;
+import com.playmatch.playmatch.enums.BookingStatus;
 import com.playmatch.playmatch.exception.DuplicateBookingException;
 import com.playmatch.playmatch.exception.MatchFullException;
 import com.playmatch.playmatch.exception.MatchNotFoundException;
 import com.playmatch.playmatch.exception.UserNotFoundException;
-import com.playmatch.playmatch.dto.booking.BookingRequest;
-import com.playmatch.playmatch.util.BookingResponseMapper;
-import com.playmatch.playmatch.entity.Match;
-import com.playmatch.playmatch.entity.User;
-import com.playmatch.playmatch.enums.BookingStatus;
 import com.playmatch.playmatch.repository.BookingRepository;
 import com.playmatch.playmatch.repository.MatchRepository;
 import com.playmatch.playmatch.repository.UserRepository;
 import com.playmatch.playmatch.security.CustomUserDetails;
+import com.playmatch.playmatch.util.BookingResponseMapper;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Service
