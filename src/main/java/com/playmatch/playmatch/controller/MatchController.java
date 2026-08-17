@@ -1,20 +1,23 @@
 package com.playmatch.playmatch.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
-import jakarta.validation.Valid;
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.playmatch.playmatch.dto.match.CreateMatchRequest;
 import com.playmatch.playmatch.dto.match.MatchResponse;
+import com.playmatch.playmatch.enums.SportType;
 import com.playmatch.playmatch.service.MatchService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,10 +42,10 @@ public class MatchController {
     }
 
     @GetMapping
-    public List<MatchResponse> getAllMatches() {
+    public List<MatchResponse> getAllMatches(@RequestParam(required = false) SportType sport, @RequestParam(required = false) String title) {
         // Implement the logic to retrieve all matches
         log.info("Received request to get all matches from MatchController");
-        return matchService.getAllMatches(); // Placeholder return statement
+        return matchService.getAllMatches(sport, title); // Placeholder return statement
     }
 
     @PutMapping("/{id}")
