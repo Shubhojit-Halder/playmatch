@@ -6,7 +6,18 @@ spring:
     url: jdbc:postgresql://localhost:5434/playmatch
     username: postgres
     password: password
-
+  # Added Redis Configuration Properties
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: "" # Leave empty or remove if no authentication is set on your local instance
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
   jpa:
     hibernate:
       ddl-auto: update

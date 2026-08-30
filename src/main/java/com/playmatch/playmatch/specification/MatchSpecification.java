@@ -1,5 +1,7 @@
 package com.playmatch.playmatch.specification;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import com.playmatch.playmatch.entity.Match;
@@ -32,4 +34,38 @@ public class MatchSpecification {
             );
         };
     }
+
+    public static Specification<Match> matchTimeAfter(LocalDateTime dateTime){
+        return (root, query, criteriaBuilder)->{
+            if(dateTime==null){
+                return null;
+            }
+            return criteriaBuilder.greaterThanOrEqualTo(
+                root.<LocalDateTime>get("matchTime"),
+                dateTime
+            );
+        };
+    }
+
+    public static Specification<Match> matchTimeBefore(LocalDateTime dateTime){
+        return (root, query, criteriaBuilder)->{
+            if(dateTime==null){
+                return null;
+            }
+            return criteriaBuilder.lessThanOrEqualTo(
+                root.<LocalDateTime>get("matchTime"),
+                dateTime
+            );
+        };
+    }
+
+    public static Specification<Match> availablePlayersGreaterThanZero(){
+        return (root,query,criteriaBuilder)->{
+            return criteriaBuilder.greaterThan(
+                root.<Integer>get("maxPlayers"),
+                root.<Integer>get("bookedPlayers")
+            );
+        };
+    }
+
 }

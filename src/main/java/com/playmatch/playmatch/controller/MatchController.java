@@ -21,7 +21,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
+import java.time.LocalDateTime;
 @Slf4j
 @RestController
 @RequestMapping("/api/matches")
@@ -42,12 +42,12 @@ public class MatchController {
     }
 
     @GetMapping
-    public List<MatchResponse> getAllMatches(@RequestParam(required = false) SportType sport, @RequestParam(required = false) String title) {
+    public List<MatchResponse> getAllMatches(@RequestParam(required = false) SportType sport, @RequestParam(required = false) String title , @RequestParam(required = false) LocalDateTime from, @RequestParam(required = false) LocalDateTime to) {
         // Implement the logic to retrieve all matches
         log.info("Received request to get all matches from MatchController");
-        return matchService.getAllMatches(sport, title); // Placeholder return statement
+        return matchService.getAllMatches(sport, title, from, to); // Placeholder return statement
     }
-
+    
     @PutMapping("/{id}")
     public MatchResponse updateMatch(@PathVariable String id, @Valid @RequestBody CreateMatchRequest request) {
         // Implement the logic to update a match

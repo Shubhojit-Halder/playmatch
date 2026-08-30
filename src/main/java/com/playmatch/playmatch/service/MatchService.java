@@ -1,5 +1,6 @@
 package com.playmatch.playmatch.service;
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,10 @@ import com.playmatch.playmatch.security.CustomUserDetails;
 import com.playmatch.playmatch.specification.MatchSpecification;
 import com.playmatch.playmatch.util.MatchResponseMapper;
 
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,6 +35,7 @@ public class MatchService {
     private final MatchRepository matchRepository;
     private final UserRepository userRepository;
 
+    @Cacheable(value = "matches", key = "#id")
     public MatchResponse findMatchById(String id) {
         log.info("Fetching match with ID: {}", id);
         return matchRepository.findById(id)
@@ -37,13 +43,6 @@ public class MatchService {
                 .orElseThrow(() -> new MatchNotFoundException(id));
     }
     
-    // public String getCurrentUserId(){
-    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    //     log.info("Current user: {}", authentication.getPrincipal());
-    //     String userEmail = authentication.getPrincipal().toString();
-    //     return userEmail;
-    // }
-
     public User getCurrentUser(){
          Authentication auth= SecurityContextHolder.getContext().getAuthentication();
 
@@ -77,10 +76,15 @@ public class MatchService {
         return new MatchResponseMapper().toMatchResponse(savedMatch);
     }
 
-    public List<MatchResponse> getAllMatches(SportType sport, String title) {
+    public List<MatchResponse> getAllMatches(SportType sport, String title, LocalDateTime from,LocalDateTime to) {
         log.info("Fetching all matches");
         Specification<Match> specification =
-        MatchSpecification.hasSport(sport).and(MatchSpecification.titleContains(title));
+        MatchSpecification.hasSport(sport)
+        .and(MatchSpecification.titleContains(title))
+        .and(MatchSpecification.matchTimeAfter(from))
+        .and(MatchSpecification.matchTimeBefore(to))
+        .and(MatchSpecification.availablePlayersGreaterThanZero());
+        
 
         List<MatchResponse>allMatches= matchRepository.findAll(specification).stream()
                 .map(match -> new MatchResponseMapper().toMatchResponse(match))
@@ -93,6 +97,7 @@ public class MatchService {
         return allMatches;
     }
 
+    @CachePut(value = "matches", key = "#id")
     public MatchResponse updateMatch(String id, CreateMatchRequest request) {
 
         log.info("Updating match with ID: {}", id);
@@ -113,6 +118,7 @@ public class MatchService {
         return new MatchResponseMapper().toMatchResponse(updatedMatch);
     }
 
+    @CacheEvict(value = "matches", key = "#id")
     public void deleteMatch(String id) {
         log.info("Deleting match with ID: {}", id);
         Match match = matchRepository.findById(id)
